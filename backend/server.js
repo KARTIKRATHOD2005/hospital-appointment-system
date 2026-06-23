@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 const db = require("./db");
@@ -14,35 +15,46 @@ app.get("/", (req, res) => {
     res.send("Hospital Appointment System Backend Running");
 });
 
-// REGISTER
-app.post("/register", (req, res) => {
+// REGISTER WITH HASHED PASSWORD
+app.post("/register", async (req, res) => {
     const { name, email, password, phone } = req.body;
 
-    const sql = "INSERT INTO patients (name, email, password, phone) VALUES (?, ?, ?, ?)";
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    db.query(sql, [name, email, password, phone], (err) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({
-                success: false,
-                message: "Registration Failed"
+        const sql = "INSERT INTO patients (name, email, password, phone) VALUES (?, ?, ?, ?)";
+
+        db.query(sql, [name, email, hashedPassword, phone], (err) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Registration Failed"
+                });
+            }
+
+            res.status(201).json({
+                success: true,
+                message: "Patient Registered Successfully"
             });
-        }
-
-        res.status(201).json({
-            success: true,
-            message: "Patient Registered Successfully"
         });
-    });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    }
 });
 
-// LOGIN
+// LOGIN WITH HASHED PASSWORD CHECK
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
 
-    const sql = "SELECT * FROM patients WHERE email = ? AND password = ?";
+    const sql = "SELECT * FROM patients WHERE email = ?";
 
-    db.query(sql, [email, password], (err, result) => {
+    db.query(sql, [email], async (err, result) => {
         if (err) {
             console.log(err);
             return res.status(500).json({
@@ -51,11 +63,22 @@ app.post("/login", (req, res) => {
             });
         }
 
-        if (result.length > 0) {
+        if (result.length === 0) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid Email or Password"
+            });
+        }
+
+        const patient = result[0];
+
+        const isMatch = await bcrypt.compare(password, patient.password);
+
+        if (isMatch) {
             res.json({
                 success: true,
                 message: "Login Successful",
-                patient: result[0]
+                patient: patient
             });
         } else {
             res.status(401).json({
