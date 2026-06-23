@@ -1,38 +1,56 @@
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
+import { useState } from "react";
+import axios from "axios";
 
-    const sql = "SELECT * FROM patients WHERE email = ?";
+function Login() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
 
-    db.query(sql, [email], async (err, result) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({
-                success: false,
-                message: "Server Error"
-            });
-        }
-
-        if (result.length === 0) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid Email or Password"
-            });
-        }
-
-        const patient = result[0];
-        const isMatch = await bcrypt.compare(password, patient.password);
-
-        if (isMatch) {
-            res.json({
-                success: true,
-                message: "Login Successful",
-                patient: patient
-            });
-        } else {
-            res.status(401).json({
-                success: false,
-                message: "Invalid Email or Password"
-            });
-        }
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
     });
-});
+  };
+
+  const loginPatient = async () => {
+    try {
+      const res = await axios.post("http://localhost:5000/login", formData);
+
+      alert(res.data.message);
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("patient", JSON.stringify(res.data.patient));
+
+    } catch (err) {
+      alert("Invalid Email or Password");
+    }
+  };
+
+  return (
+    <div style={{ padding: "30px" }}>
+      <h2>Patient Login</h2>
+
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        onChange={handleChange}
+      />
+      <br /><br />
+
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        onChange={handleChange}
+      />
+      <br /><br />
+
+      <button onClick={loginPatient}>Login</button>
+    </div>
+  );
+}
+
+export default Login;
