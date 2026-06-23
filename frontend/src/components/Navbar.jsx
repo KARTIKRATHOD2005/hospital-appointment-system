@@ -2,26 +2,18 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
-    <nav style={{ padding: "15px", background: "#0d6efd" }}>
-      <Link to="/" style={{ color: "white", marginRight: "20px" }}>
-        Register
-      </Link>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+      <div className="container">
+        <Link className="navbar-brand fw-bold" to="/">🏥 Hospital System</Link>
 
-      <Link to="/login" style={{ color: "white", marginRight: "20px" }}>
-        Login
-      </Link>
-
-      <Link to="/doctors" style={{ color: "white", marginRight: "20px" }}>
-        Doctors
-      </Link>
-
-      <Link to="/appointments" style={{ color: "white", marginRight: "20px" }}>
-        Appointments
-      </Link>
-
-      <Link to="/dashboard" style={{ color: "white" }}>
-        Dashboard
-      </Link>
+        <div className="navbar-nav ms-auto">
+          <Link className="nav-link" to="/">Register</Link>
+          <Link className="nav-link" to="/login">Login</Link>
+          <Link className="nav-link" to="/doctors">Doctors</Link>
+          <Link className="nav-link" to="/appointments">Appointments</Link>
+          <Link className="nav-link" to="/dashboard">Dashboard</Link>
+        </div>
+      </div>
     </nav>
   );
 }

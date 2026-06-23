@@ -10,32 +10,40 @@ function Dashboard() {
 
   useEffect(() => {
     axios.get("http://localhost:5000/dashboard")
-      .then((res) => {
-        setDashboard(res.data.dashboard);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .then(res => setDashboard(res.data.dashboard))
+      .catch(err => console.log(err));
   }, []);
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>Admin Dashboard</h2>
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Admin Dashboard</h2>
 
-      <div style={{ display: "flex", gap: "20px" }}>
-        <div style={{ border: "1px solid gray", padding: "20px" }}>
-          <h3>Total Patients</h3>
-          <h1>{dashboard.totalPatients}</h1>
+      <div className="row g-4">
+        <div className="col-md-4">
+          <div className="card shadow text-center border-primary">
+            <div className="card-body">
+              <h5>Total Patients</h5>
+              <h1 className="text-primary">{dashboard.totalPatients}</h1>
+            </div>
+          </div>
         </div>
 
-        <div style={{ border: "1px solid gray", padding: "20px" }}>
-          <h3>Total Doctors</h3>
-          <h1>{dashboard.totalDoctors}</h1>
+        <div className="col-md-4">
+          <div className="card shadow text-center border-success">
+            <div className="card-body">
+              <h5>Total Doctors</h5>
+              <h1 className="text-success">{dashboard.totalDoctors}</h1>
+            </div>
+          </div>
         </div>
 
-        <div style={{ border: "1px solid gray", padding: "20px" }}>
-          <h3>Total Appointments</h3>
-          <h1>{dashboard.totalAppointments}</h1>
+        <div className="col-md-4">
+          <div className="card shadow text-center border-warning">
+            <div className="card-body">
+              <h5>Total Appointments</h5>
+              <h1 className="text-warning">{dashboard.totalAppointments}</h1>
+            </div>
+          </div>
         </div>
       </div>
     </div>
